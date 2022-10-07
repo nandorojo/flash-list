@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import FlashList from "../FlashList";
 
 import { autoScroll, Cancellable } from "./AutoScrollHelper";
+import { FrameTimeMonitor } from "./FrameTimeMonitor";
 import { JSFPSMonitor, JSFPSResult } from "./JSFPSMonitor";
 import { roundToDecimalPlaces } from "./roundToDecimalPlaces";
 import {
@@ -63,7 +64,9 @@ export function useBenchmark(
       }
     }
     const cancelTimeout = setTimeout(async () => {
+      const frameMonitor = new FrameTimeMonitor();
       const jsFPSMonitor = new JSFPSMonitor();
+      frameMonitor.startTracking();
       jsFPSMonitor.startTracking();
       for (let i = 0; i < (params.repeatCount || 1); i++) {
         await runScrollBenchmark(
@@ -73,11 +76,13 @@ export function useBenchmark(
         );
       }
       const jsProfilerResponse = jsFPSMonitor.stopAndGetData();
+      const frameTimeResponse = frameMonitor.stopAndGetData();
       if (jsProfilerResponse.averageFPS < 35) {
         suggestions.push(
           `Your average JS FPS is low. This can indicate that your components are doing too much work. Try to optimize your components and reduce re-renders if any`
         );
       }
+      suggestions.push(frameTimeResponse.average + "");
       computeSuggestions(flashListRef, suggestions);
       const result: BenchmarkResult = generateResult(
         jsProfilerResponse,

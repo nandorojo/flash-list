@@ -14,6 +14,7 @@ import { DebugContext } from "../Debug";
 import TweetCell from "./TweetCell";
 import { tweets as tweetsData } from "./data/tweets";
 import Tweet from "./models/Tweet";
+import { FrameTimeMonitor } from "../../../src/benchmark/FrameTimeMonitor";
 
 export interface TwitterProps {
   instance?: React.RefObject<FlashList<Tweet>>;
@@ -86,7 +87,7 @@ const Twitter = ({
         initialScrollIndex={debugContext.initialScrollIndex}
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={(info) => {
-          console.log(info);
+          //console.log(info);
         }}
         disableAutoLayout={disableAutoLayout}
       />
